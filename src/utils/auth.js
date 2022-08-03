@@ -13,3 +13,12 @@ export function setToken(token) {
 export function removeToken() {
   return Cookies.remove(TokenKey)
 }
+
+export function setTokenTime() {
+  // 存储登录时的时间戳
+  Cookies.set('tokenTime', Date.now())
+}
+// 获取token
+export function getTokenTime() {
+  return Cookies.get('tokenTime')
+}

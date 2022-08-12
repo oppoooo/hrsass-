@@ -15,7 +15,12 @@ import router from './router'
 import '@/icons' // icon
 import '@/permission' // permission control
 import * as directive from '@/directive'
-console.log(directive)
+
+// 全局组件
+import components from './components'
+Vue.use(components)
+
+// console.log(directive)
 /**
  * If you don't want to use mock-server
  * you want to use MockJs for mock api
@@ -48,8 +53,8 @@ Vue.config.productionTip = false
 // })
 for (let key in directive) {
   Vue.directive(key, directive[key])
-  console.log(key)
-  console.log(directive[key])
+  // console.log(key)
+  // console.log(directive[key])
 }
 new Vue({
   el: '#app',

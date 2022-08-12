@@ -15,7 +15,7 @@
       <el-dropdown class="avatar-container" trigger="click">
         <div class="avatar-wrapper">
           <img
-            :src="$store.state.user.userInfo.staffPhoto"
+            :src="$store.state.user.userInfo.staffPhoto + 123"
             v-imgError="defaultImg"
             class="user-avatar"
           />
@@ -43,7 +43,7 @@ import defaultImg from '@/assets/common/head.jpg'
 export default {
   data() {
     return {
-      defaultImg: 'https://img-home.csdnimg.cn/images/20201124032511.png',
+      defaultImg,
     }
   },
   components: {

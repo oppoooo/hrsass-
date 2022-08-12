@@ -15,7 +15,7 @@ const service = axios.create({
   timeout: 5000,
 }) // 创建一个axios的实例
 service.interceptors.request.use(async (config) => {
-  console.log(config)
+  // console.log(config)
   if (store.state.user.token) {
     if (isTimeOut()) {
       // 判断token是否过期
@@ -32,7 +32,7 @@ service.interceptors.request.use(async (config) => {
 }) // 请求拦截器
 service.interceptors.response.use(
   (res) => {
-    console.log(res)
+    // console.log(res)
     // 请求成功的函数
     const { success, data, message } = res.data
     if (success) {

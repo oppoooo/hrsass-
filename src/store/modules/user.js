@@ -1,10 +1,10 @@
-import { login, getUserInfoApi, getUserDetail } from '@/api/user.js'
+import { login, getInfo, getOtherInfo } from '@/api/user'
 import { setTokenTime } from '@/utils/auth'
 export default {
   namespaced: true,
   state: {
     token: '',
-    userInfo: {},
+    userInfo: {}
   },
   mutations: {
     setToken(state, payload) {
@@ -12,27 +12,22 @@ export default {
     },
     setUserInfo(state, payload) {
       state.userInfo = payload
-    },
+    }
   },
   actions: {
-    // 登录获取token
     async getToken(context, payload) {
       const res = await login(payload)
-      console.log(res)
       context.commit('setToken', res)
       setTokenTime()
     },
-    // 获取用户信息
     async getUserInfo(context) {
-      const userBaseInfo = await getUserInfoApi()
-      console.log(userBaseInfo)
-      const userInfo = await getUserDetail(userBaseInfo.userId)
-      context.commit('setUserInfo', { ...userBaseInfo, ...userInfo })
+      const Info = await getInfo()
+      const OtherInfo = await getOtherInfo(Info.userId)
+      context.commit('setUserInfo', { ...Info, ...OtherInfo })
     },
-    // 退出
     logout(context) {
       context.commit('setToken', '')
       context.commit('setUserInfo', {})
-    },
-  },
+    }
+  }
 }

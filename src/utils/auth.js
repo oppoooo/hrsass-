@@ -15,10 +15,15 @@ export function removeToken() {
 }
 
 export function setTokenTime() {
-  // 存储登录时的时间戳
   Cookies.set('tokenTime', Date.now())
 }
-// 获取token
 export function getTokenTime() {
   return Cookies.get('tokenTime')
+}
+
+export function setTokenActive(activeName) {
+  Cookies.set('activeName', activeName)
+}
+export function getTokenActive() {
+  return Cookies.get('activeName')
 }

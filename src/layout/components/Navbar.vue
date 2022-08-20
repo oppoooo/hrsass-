@@ -5,21 +5,21 @@
       class="hamburger-container"
       @toggleClick="toggleSideBar"
     />
-
     <div class="app-breadcrumb">
-      {{ $store.state.user.userInfo.company }}
+      {{ userInfo.companyName }}
       <span class="breadBtn">体验版</span>
     </div>
+    <!-- <breadcrumb class="breadcrumb-container" /> -->
 
     <div class="right-menu">
       <el-dropdown class="avatar-container" trigger="click">
         <div class="avatar-wrapper">
           <img
-            :src="$store.state.user.userInfo.staffPhoto + 123"
-            v-imgError="defaultImg"
+            :src="userInfo.staffPhoto"
             class="user-avatar"
+            v-imgError="defaultImg"
           />
-          <span>{{ $store.state.user.userInfo.username }}</span>
+          <span>{{ userInfo.username }}</span>
           <i class="el-icon-caret-bottom" />
         </div>
         <el-dropdown-menu slot="dropdown" class="user-dropdown">
@@ -39,19 +39,22 @@
 import { mapGetters } from 'vuex'
 import Breadcrumb from '@/components/Breadcrumb'
 import Hamburger from '@/components/Hamburger'
-import defaultImg from '@/assets/common/head.jpg'
+import { createNamespacedHelpers } from 'vuex'
+const { mapState } = createNamespacedHelpers('user')
+import img from '@/assets/common/head.jpg'
 export default {
   data() {
     return {
-      defaultImg,
+      defaultImg: img
     }
   },
   components: {
     Breadcrumb,
-    Hamburger,
+    Hamburger
   },
   computed: {
     ...mapGetters(['sidebar', 'avatar']),
+    ...mapState(['userInfo'])
   },
   methods: {
     toggleSideBar() {
@@ -60,8 +63,8 @@ export default {
     async logout() {
       await this.$store.dispatch('user/logout')
       this.$router.push(`/login?redirect=${this.$route.fullPath}`)
-    },
-  },
+    }
+  }
 }
 </script>
 
@@ -70,26 +73,9 @@ export default {
   height: 50px;
   overflow: hidden;
   position: relative;
+  background: #fff;
   background-image: -webkit-linear-gradient(left, #3d6df8, #5b8cff);
   box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
-  .app-breadcrumb {
-    display: inline-block;
-    font-size: 18px;
-    line-height: 50px;
-    margin-left: 10px;
-    color: #ffffff;
-    cursor: text;
-    .breadBtn {
-      background: #84a9fe;
-      font-size: 14px;
-      padding: 0 10px;
-      display: inline-block;
-      height: 30px;
-      line-height: 30px;
-      border-radius: 10px;
-      margin-left: 15px;
-    }
-  }
 
   .hamburger-container {
     line-height: 46px;
@@ -98,7 +84,7 @@ export default {
     cursor: pointer;
     transition: background 0.3s;
     -webkit-tap-highlight-color: transparent;
-    color: #fff;
+    color: #ffffff;
     fill: currentColor;
 
     &:hover {
@@ -141,15 +127,10 @@ export default {
       margin-right: 30px;
 
       .avatar-wrapper {
-        // margin-top: 5px;
         position: relative;
         display: flex;
         align-items: center;
         color: #fff;
-        cursor: pointer;
-        span {
-          margin: 0 3px;
-        }
 
         .user-avatar {
           cursor: pointer;
@@ -157,16 +138,35 @@ export default {
           height: 40px;
           border-radius: 10px;
         }
-
+        span {
+          margin: 0 10px;
+        }
         .el-icon-caret-bottom {
           cursor: pointer;
           position: absolute;
           right: -20px;
-          top: 25px;
           font-size: 12px;
         }
       }
     }
+  }
+}
+.app-breadcrumb {
+  display: inline-block;
+  font-size: 18px;
+  line-height: 50px;
+  margin-left: 10px;
+  color: #ffffff;
+  cursor: text;
+  .breadBtn {
+    background: #84a9fe;
+    font-size: 14px;
+    padding: 0 10px;
+    display: inline-block;
+    height: 30px;
+    line-height: 30px;
+    border-radius: 10px;
+    margin-left: 15px;
   }
 }
 </style>

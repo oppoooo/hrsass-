@@ -1,166 +1,153 @@
 <template>
   <div>
-    <template>
-      <el-dialog :title="dialog" :visible="visible" width="50%">
-        <el-form
-          v-loading="loading"
-          :model="formData"
-          :rules="formRules"
-          ref="form"
-          label-width="100px"
-        >
-          <el-form-item label="部门名称" prop="name">
-            <el-input
-              v-model="formData.name"
-              placeholder="输入部门名称"
-            ></el-input>
-          </el-form-item>
-
-          <el-form-item label="部门编码" prop="code">
-            <el-input
-              v-model="formData.code"
-              placeholder="输入部门编码"
-            ></el-input>
-          </el-form-item>
-
-          <el-form-item label="部门负责人" prop="manager">
-            <el-select
-              v-model="formData.manager"
-              style="width: 100%"
-              placeholder="请选择部门负责人"
-            >
-              <el-option
-                v-for="item in employees"
-                :key="item.id"
-                :label="item.username"
-                :value="item.username"
-              ></el-option>
-            </el-select>
-          </el-form-item>
-
-          <el-form-item label="部门介绍" prop="introduce">
-            <el-input
-              v-model="formData.introduce"
-              type="textarea"
-              placeholder="输入部门介绍"
-            ></el-input>
-          </el-form-item>
-        </el-form>
-
-        <span slot="footer" class="dialog-footer">
-          <el-button @click="onClose">取 消</el-button>
-          <el-button @click="onSave" type="primary">确 定</el-button>
-        </span>
-      </el-dialog>
-    </template>
+    <el-dialog
+      :title="title"
+      :visible="visible"
+      width="30%"
+      :before-close="onClose"
+    >
+      <el-form
+        ref="form"
+        :model="formData"
+        label-width="100px"
+        :rules="formRules"
+      >
+        <el-form-item label="部门名称" prop="name">
+          <el-input
+            placeholder="输入部门名称"
+            v-model="formData.name"
+          ></el-input>
+        </el-form-item>
+        <el-form-item label="部门编码" prop="code">
+          <el-input
+            placeholder="输入部门编码"
+            v-model="formData.code"
+          ></el-input>
+        </el-form-item>
+        <el-form-item label="部门负责人" prop="manager">
+          <el-select
+            placeholder="请选择负责人"
+            v-model="formData.manager"
+            style="width: 100%"
+          >
+            <el-option
+              :label="item.username"
+              :value="item.username"
+              v-for="item in employees"
+              :key="item.id"
+            ></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="部门介绍" prop="introduce">
+          <el-input
+            type="textarea"
+            placeholder="部门介绍"
+            v-model="formData.introduce"
+          ></el-input>
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="onClose">取 消</el-button>
+        <el-button type="primary" @click="onSave">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import {
   getDeptsApi,
-  addDeptsApi,
-  getDeptByIdApi,
-  editDeptsApi,
+  addDepartment,
+  getDepartment,
+  editDepartment
 } from '@/api/departments'
-import { getEmployeesApi } from '@/api/employees'
+import { getEmployees } from '@/api/employees'
+
 export default {
   data() {
-    const checkDeptName = async (rule, value, callback) => {
+    // 部门名称
+    const checkName = async (rule, value, callback) => {
       if (this.formData.id) {
-        // 编辑
         const { depts } = await getDeptsApi()
-        const filtersDepts = depts.filter(
-          (item) =>
-            item.pid === this.formData.pid && item.id !== this.formData.id,
-        )
-        const isRepeat = filtersDepts.some((item) => item.name === value)
-        isRepeat ? callback(new Error('部门重复')) : callback()
+        console.log(depts)
+        const filtersDepts = depts.filter((item) => {
+          return item.pid === this.formData.pid && item.id !== this.formData.id
+        })
+        console.log(filtersDepts)
+        const isRpeact = filtersDepts.some((item) => item.name === value)
+        isRpeact ? callback(new Error('部门重复')) : callback()
       } else {
         if (!this.currentNode.children) return callback()
-        // 判断value 是否和添加统计部门重复
-        const isRepeat = this.currentNode.children.some(
-          (item) => item.name === value,
-        )
-        // 如果重复了callback(new Error('部门重复'))
-        // 没重复callback()
-        isRepeat ? callback(new Error('部门重复')) : callback()
+        const isRpeact = this.currentNode.children.some((ele) => {
+          ele.name === value
+        })
+        isRpeact ? callback(new Error('部门重复')) : callback()
       }
     }
-    // 部门编码是否重复
-    const checkDeptCode = async (rule, value, cb) => {
+
+    // 部门编码
+    const checkCode = async (rule, value, callback) => {
       const { depts } = await getDeptsApi()
-      let isRepeat
+      let isRpeact
       if (this.formData.id) {
-        isRepeat = depts
+        isRpeact = depts
           .filter((item) => item.id !== this.formData.id)
-          .some((item) => item.code === value)
+          .some((ele) => ele.code === value)
       } else {
-        isRepeat = depts.some((item) => item.code === value)
+        isRpeact = depts.some((ele) => ele.code === value)
       }
-      isRepeat ? cb(new Error('部门重复')) : cb()
+      isRpeact ? callback(new Error('部门编码重复')) : callback()
     }
     return {
       formData: {
         name: '',
         code: '',
         manager: '',
-        introduce: '',
+        introduce: ''
       },
       formRules: {
         name: [
-          { required: true, message: '部门名称不能为空', trigger: 'blur' },
+          { required: true, message: '请输入部门名称', trigger: 'blur' },
           {
-            validator: checkDeptName,
-            trigger: 'blur',
-          },
+            validator: checkName,
+            trigger: 'blur'
+          }
         ],
         code: [
-          { required: true, message: '部门编码不能为空', trigger: 'blur' },
+          { required: true, message: '请输入部门编码', trigger: 'blur' },
           {
-            validator: checkDeptCode,
-            trigger: 'blur',
-          },
+            validator: checkCode,
+            trigger: 'blur'
+          }
         ],
         manager: [
-          { required: true, message: '部门负责人不能为空', trigger: 'change' },
+          { required: true, message: '请输入部门负责人', trigger: 'change' }
         ],
         introduce: [
-          { required: true, message: '部门介绍不能为空', trigger: 'blur' },
-          {
-            trigger: 'blur',
-            min: 1,
-            max: 300,
-            message: '部门介绍要求1-50个字符',
-          },
-        ],
+          { required: true, message: '请输入部门介绍', trigger: 'blur' }
+        ]
       },
-      employees: [],
-      loading: false,
+      employees: []
     }
-  },
-  computed: {
-    dialog() {
-      return this.formData.id ? '编辑部门' : '添加部门'
-    },
   },
   props: {
     visible: {
       type: Boolean,
-      required: true,
+      required: true
     },
     currentNode: {
       type: Object,
-      required: true,
-    },
+      required: true
+    }
   },
+
   created() {
-    this.getEmployeesApi()
+    this.getEmployees()
   },
-  // 部门负责人
+
   methods: {
-    async getEmployeesApi() {
-      const res = await getEmployeesApi()
+    async getEmployees() {
+      const res = await getEmployees()
       this.employees = res
     },
     onClose() {
@@ -170,39 +157,38 @@ export default {
         name: '',
         code: '',
         manager: '',
-        introduce: '',
+        introduce: ''
       }
     },
-    // 点击添加确定
     async onSave() {
       await this.$refs.form.validate()
+      this.formData.pid = this.currentNode.id
       try {
         if (this.formData.id) {
-          // 编辑
-          this.loading = true
-          await editDeptsApi(this.formData)
+          await editDepartment(this.formData)
           this.$message.success('编辑成功')
           this.onClose()
-          this.$emit('add-dept')
-          console.log('编辑')
-          this.loading = false
+          this.$emit('addSuccess')
         } else {
-          this.formData.pid = this.currentNode.id
-          console.log(this.formData)
-
-          await addDeptsApi(this.formData)
-          this.$emit('add-dept')
+          await addDepartment(this.formData)
+          this.$message.success('添加成功')
           this.onClose()
-          this.$message.success('新增部门成功')
+          this.$emit('addSuccess')
         }
       } catch (error) {
-        this.$message.error('新增部门失败')
+        this.$message.error('操作部门失败')
       }
     },
     async getDeptById(id) {
-      this.formData = await getDeptByIdApi(id)
-    },
+      this.formData = await getDepartment(id)
+    }
   },
+
+  computed: {
+    title() {
+      return this.formData.id ? '编辑部门' : '添加部门'
+    }
+  }
 }
 </script>
 

@@ -73,7 +73,7 @@ export default {
       this.loading = true
       const res = await getDeptsApi()
       this.dataList = a(res.depts, '')
-       this.loading = false
+      this.loading = false
     },
     showAddDept(val) {
       ;(this.dialogVisible = true), (this.currentNode = val)

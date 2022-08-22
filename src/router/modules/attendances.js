@@ -1,6 +1,9 @@
 import Layout from '@/layout'
 export default {
   path: '/attendances',
+  meta: {
+    id: 'attendances'
+  },
   component: Layout,
   children: [
     {

@@ -4,13 +4,21 @@
       <PageTools>
         <span slot="left-tag">共166条记录</span>
         <template slot="right">
-          <el-button size="small" type="warning" @click="importFn"
+          <el-button
+            size="small"
+            v-isHas="point.employees.import"
+            type="warning"
+            @click="importFn"
             >导入</el-button
           >
           <el-button size="small" type="danger" @click="exportFn"
             >导出</el-button
           >
-          <el-button size="small" type="primary" @click="dialogVisible = true"
+          <el-button
+            v-if="isHas(point.employees.add)"
+            size="small"
+            type="primary"
+            @click="dialogVisible = true"
             >新增员工</el-button
           >
         </template>
@@ -76,6 +84,7 @@
               <el-button
                 type="text"
                 size="small"
+                v-if="isHas(point.employees.del)"
                 @click="delEmployeesFn(row.id)"
                 >删除</el-button
               >
@@ -120,6 +129,7 @@ const { exportMapKeyPath, hireType } = employees
 import Addemloyees from './components/add-emloyees'
 import AssignRole from './components/assign-role.vue'
 import QRcode from 'qrcode'
+import permissionPoint from '@/constant/permission'
 export default {
   data() {
     return {
@@ -132,7 +142,8 @@ export default {
       dialogVisible: false,
       ercodeDialog: false,
       showAssignRole: false,
-      currentEmployeesId: ''
+      currentEmployeesId: '',
+      point: permissionPoint
     }
   },
 
@@ -202,6 +213,9 @@ export default {
     AssignRole(id) {
       this.showAssignRole = true
       this.currentEmployeesId = id
+    },
+    isHas(point) {
+      return this.$store.state.permission.points.includes(point)
     }
   },
   components: {

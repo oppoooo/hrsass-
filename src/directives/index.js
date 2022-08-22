@@ -1,3 +1,4 @@
+import store from '@/store'
 export const imgError = {
   inserted: function (el, { value }) {
     if (!el.src) {
@@ -11,6 +12,16 @@ export const imgError = {
   update(el, { value }) {
     if (!el.src) {
       el.src = value
+    }
+  }
+}
+
+export const isHas = {
+  // bind 指令和dom绑定
+  inserted(el, binding) {
+    const has = store.state.permission.points.includes(binding.value)
+    if (!has) {
+      el.remove()
     }
   }
 }

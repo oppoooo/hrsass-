@@ -59,17 +59,19 @@
       </el-row>
       <!-- 员工照片 -->
       <el-row class="inline-info">
-        <el-col :span="24">
+        <el-col :span="12">
           <el-form-item label="员工头像">
-            <UploadImg ref="headerImg" @success="headerImgSuccess"></UploadImg>
             <!-- 放置上传图片 -->
+            <upload-img ref="headerImg" @onSuccess="headerImgSuccess" />
           </el-form-item>
         </el-col>
       </el-row>
       <!-- 保存个人信息 -->
       <el-row class="inline-info" type="flex" justify="center">
         <el-col :span="12">
-          <el-button type="primary" @click="updateUserInfo">保存更新</el-button>
+          <el-button type="primary" @click="onSaveUserDetail"
+            >保存更新</el-button
+          >
           <el-button @click="$router.back()">返回</el-button>
         </el-col>
       </el-row>
@@ -96,10 +98,7 @@
 
         <el-form-item label="员工照片">
           <!-- 放置上传图片 -->
-          <UploadImg
-            ref="employeesPic"
-            @success="employeesPicSuccess"
-          ></UploadImg>
+          <upload-img ref="employeesPic" @onSuccess="employeesPicSuccess" />
         </el-form-item>
         <el-form-item label="国家/地区">
           <el-select v-model="formData.nationalArea" class="inputW2">
@@ -385,7 +384,7 @@
         <!-- 保存员工信息 -->
         <el-row class="inline-info" type="flex" justify="center">
           <el-col :span="12">
-            <el-button type="primary" @click="saveUpdatedUserInfo"
+            <el-button type="primary" @click="onSaveEmployeesInfo"
               >保存更新</el-button
             >
             <el-button @click="$router.back()">返回</el-button>
@@ -398,8 +397,9 @@
 
 <script>
 import EmployeeEnum from '@/constant/employees'
-import { getOtherInfo, updateUserInfo } from '@/api/user'
-import { getPersonalDetail, updatePersonal } from '@/api/employees'
+import { getUserDetail, saveUserDetailById } from '@/api/user.js'
+import { getPersonalDetail, updatePersonal } from '@/api/employees.js'
+
 export default {
   data() {
     return {
@@ -467,51 +467,51 @@ export default {
         resume: '', // 简历
         isThereAnyCompetitionRestriction: '', // 有无竞业限制
         proofOfDepartureOfFormerCompany: '', // 前公司离职证明
-        remarks: '' // 备注
-      }
+        remarks: '', // 备注
+      },
     }
   },
   created() {
-    this.getOtherInfo()
-    this.getPersonalDetail()
+    this.loadUserDetail()
+    this.loadEmployeesInfo()
   },
   methods: {
-    // 获取个人信息
-    async getOtherInfo() {
-      this.userInfo = await getOtherInfo(this.userId)
-      this.$refs.headerImg.fileLists.push({ url: this.userInfo.staffPhoto })
+    async loadUserDetail() {
+      this.userInfo = await getUserDetail(this.userId)
+      this.$refs.headerImg.fileList.push({
+        url: this.userInfo.staffPhoto,
+      })
     },
-    // 获取基本信息
-    async getPersonalDetail() {
+    async loadEmployeesInfo() {
       this.formData = await getPersonalDetail(this.userId)
-      this.$refs.employeesPic.fileLists.push({ url: this.formData.staffPhoto })
+      this.$refs.employeesPic.fileList.push({
+        url: this.formData.staffPhoto,
+      })
     },
-    // 保存个人信息
-    async updateUserInfo() {
+    async onSaveUserDetail() {
       if (this.$refs.headerImg.loading) {
-        return this.$message.error('头像正在上传')
+        return this.$message.error('头像正在上传中')
       }
-      await updateUserInfo(this.userInfo)
-      this.$message.success('头像ok')
+      await saveUserDetailById(this.userInfo)
+
+      this.$message.success('更新成功')
     },
-    // 保存基本信息
-    async saveUpdatedUserInfo() {
+    async onSaveEmployeesInfo() {
       if (this.$refs.employeesPic.loading) {
-        return this.$message.error('照片正在上传')
+        return this.$message.error('头像正在上传中')
       }
       await updatePersonal(this.formData)
-      this.$message.success('照片ok')
+      this.$message.success('更新成功')
     },
-    // 监听个人信息照片
+    // 监听员工头像上传成功
     headerImgSuccess({ url }) {
-      console.log(url)
       this.userInfo.staffPhoto = url
     },
-    // 监听基本信息照片
+    // 监听员工照片上传成功
     employeesPicSuccess({ url }) {
       this.formData.staffPhoto = url
-    }
-  }
+    },
+  },
 }
 </script>
 

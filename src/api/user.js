@@ -1,38 +1,47 @@
 import request from '@/utils/request'
-// 登录
+
+/**
+ * 登录请求
+ * @param {Object} data password mobile
+ * @returns promise
+ */
 export function login(data) {
   return request({
     url: '/sys/login',
-    method: 'post',
-    data
+    method: 'POST',
+    data,
   })
 }
-// 获取用户基本信息
-export function getInfo() {
+/**
+ * 获取用户信息
+ * @returns promise
+ */
+export function getUserInfoApi() {
   return request({
     url: '/sys/profile',
-    method: 'POST'
+    method: 'POST',
   })
 }
-// 获取用户其他全部信息
-export function getOtherInfo(id) {
+
+/**
+ * 根据用户id获取员工详情数据
+ * @param {String} id 用户id
+ * @returns promise
+ */
+export function getUserDetail(id) {
   return request({
     url: '/sys/user/' + id,
-    method: 'GET'
   })
 }
 
-export function logout() {
+/** *
+ *
+ * 保存员工的基本信息
+ * **/
+export function saveUserDetailById(data) {
   return request({
-    url: '/vue-admin-template/user/logout',
-    method: 'post'
+    url: `/sys/user/${data.id}`,
+    method: 'put',
+    data,
   })
 }
-export function updateUserInfo(data) {
-  return request({
-    url: '/sys/user/' + data.id,
-    method: 'PUT',
-    data
-  })
-}
-
